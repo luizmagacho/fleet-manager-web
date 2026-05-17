@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: gestor-frota-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    plan: free # Change to starter ($7/mo) for 24/7 availability
+    disk:
+      name: uploads-data
+      mountPath: /app/uploads
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: '3001'
+      - key: MONGODB_URI
+        sync: false # Requires manual setting in the dashboard
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        sync: false
+      - key: DETRAN_CLIENT_ID
+        sync: false
+      - key: DETRAN_CLIENT_SECRET
+        sync: false
