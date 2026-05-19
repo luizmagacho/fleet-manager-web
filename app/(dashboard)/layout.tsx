@@ -43,13 +43,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (typeof window !== 'undefined') {
         let token = localStorage.getItem('accessToken');
         if (!token) {
-          const sessionData = await getSession();
-          token = (sessionData?.user as any)?.accessToken || undefined;
-          if (token) {
-            localStorage.setItem('accessToken', token);
-            if ((sessionData?.user as any)?.refreshToken) {
-              localStorage.setItem('refreshToken', (sessionData?.user as any).refreshToken);
+          try {
+            const sessionData = await getSession();
+            token = (sessionData?.user as any)?.accessToken || undefined;
+            if (token) {
+              localStorage.setItem('accessToken', token);
+              if ((sessionData?.user as any)?.refreshToken) {
+                localStorage.setItem('refreshToken', (sessionData?.user as any).refreshToken);
+              }
             }
+          } catch (e) {
+            console.error('Error fetching session:', e);
           }
         }
 
