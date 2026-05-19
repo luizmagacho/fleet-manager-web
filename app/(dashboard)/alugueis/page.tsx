@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import Link from 'next/link';
 import { Plus, Search, FileText, Eye } from 'lucide-react';
-import { formatCurrency, formatDate } from '@fleet/shared';
+import { formatCurrency, formatDate } from '@/lib/shared-utils';
 
 const statusColors: Record<string, string> = {
   ATIVO: 'bg-green-100 text-green-700', ENCERRADO: 'bg-slate-100 text-slate-700',

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import Link from 'next/link';
 import { Plus, AlertTriangle } from 'lucide-react';
-import { formatCurrency, formatDate } from '@fleet/shared';
+import { formatCurrency, formatDate } from '@/lib/shared-utils';
 
 export default function FinesPage() {
   const { data, isLoading } = useQuery({

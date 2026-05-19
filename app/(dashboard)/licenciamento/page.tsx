@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import { Plus, FileCheck } from 'lucide-react';
 import Link from 'next/link';
-import { formatCurrency } from '@fleet/shared';
+import { formatCurrency } from '@/lib/shared-utils';
 
 export default function LicensingPage() {
   const { data, isLoading } = useQuery({ queryKey: ['licensing'], queryFn: () => api.get<any>('/licensing', { limit: 50 }) });

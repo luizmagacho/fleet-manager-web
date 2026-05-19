@@ -6,7 +6,7 @@ import { api } from '@/lib/api-client';
 import Link from 'next/link';
 import { Plus, Search, Users, Eye, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatCPF } from '@fleet/shared';
+import { formatCPF } from '@/lib/shared-utils';
 
 export default function DriversPage() {
   const [search, setSearch] = useState('');

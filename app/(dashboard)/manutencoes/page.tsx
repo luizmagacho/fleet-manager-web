@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import Link from 'next/link';
 import { Plus, Search, Wrench, Eye } from 'lucide-react';
-import { formatCurrency, formatDate } from '@fleet/shared';
+import { formatCurrency, formatDate } from '@/lib/shared-utils';
 
 const typeLabels: Record<string, string> = {
   PREVENTIVA: 'Preventiva', CORRETIVA: 'Corretiva', REVISAO: 'Revisão', SINISTRO: 'Sinistro',

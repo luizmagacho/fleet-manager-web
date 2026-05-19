@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import Link from 'next/link';
 import { Plus, Receipt } from 'lucide-react';
-import { formatCurrency } from '@fleet/shared';
+import { formatCurrency } from '@/lib/shared-utils';
 
 export default function IpvaPage() {
   const { data, isLoading } = useQuery({ queryKey: ['ipva'], queryFn: () => api.get<any>('/ipva', { limit: 50 }) });
