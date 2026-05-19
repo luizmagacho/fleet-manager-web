@@ -5,8 +5,7 @@ export default auth((req) => {
   const isAuthPage = req.nextUrl.pathname.startsWith('/login') ||
     req.nextUrl.pathname.startsWith('/registro') ||
     req.nextUrl.pathname.startsWith('/esqueci-senha');
-  const isPublicPage = req.nextUrl.pathname === '/' ||
-    req.nextUrl.pathname.startsWith('/api/auth');
+  const isPublicPage = req.nextUrl.pathname.startsWith('/api/auth');
 
   if (isPublicPage) return;
 
