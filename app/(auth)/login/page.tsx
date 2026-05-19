@@ -17,15 +17,18 @@ export default function LoginPage() {
   useEffect(() => {
     const cleanSession = async () => {
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        try {
-          await signOut({ redirect: false });
-        } catch (e) {}
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+          try {
+            await signOut({ redirect: false });
+          } catch (e) {}
+        } else {
+          router.push('/dashboard');
+        }
       }
     };
     cleanSession();
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
