@@ -1,25 +1,61 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-export default function NewVehiclePage() {
+export default function EditVehiclePage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+
   const [form, setForm] = useState({
     plate: '', renavam: '', chassis: '', brand: '', model: '',
     year: new Date().getFullYear(), modelYear: new Date().getFullYear(),
     color: '', fuelType: 'FLEX', transmission: 'AUTOMATICO', seats: 5,
-    purchasePrice: 0, notes: '', mileage: 0,
+    purchasePrice: 0, notes: '', status: 'DISPONIVEL', mileage: 0,
   });
 
+  const { data, isLoading } = useQuery({
+    queryKey: ['vehicles', id],
+    queryFn: () => api.get<any>(`/vehicles/${id}`),
+  });
+
+  const vehicle = data?.data || data;
+
+  useEffect(() => {
+    if (vehicle) {
+      setForm({
+        plate: vehicle.plate || '',
+        renavam: vehicle.renavam || '',
+        chassis: vehicle.chassis || '',
+        brand: vehicle.brand || '',
+        model: vehicle.model || '',
+        year: vehicle.year || new Date().getFullYear(),
+        modelYear: vehicle.modelYear || new Date().getFullYear(),
+        color: vehicle.color || '',
+        fuelType: vehicle.fuelType || 'FLEX',
+        transmission: vehicle.transmission || 'AUTOMATICO',
+        seats: vehicle.seats || 5,
+        purchasePrice: vehicle.purchasePrice || 0,
+        notes: vehicle.notes || '',
+        status: vehicle.status || 'DISPONIVEL',
+        mileage: vehicle.mileage || vehicle.currentMileage || 0,
+      });
+    }
+  }, [vehicle]);
+
   const mutation = useMutation({
-    mutationFn: (data: typeof form) => api.post('/vehicles', data),
-    onSuccess: () => { toast.success('Veículo cadastrado!'); router.push('/veiculos'); },
+    mutationFn: (updatedData: typeof form) => api.put(`/vehicles/${id}`, updatedData),
+    onSuccess: () => {
+      toast.success('Veículo atualizado com sucesso!');
+      router.push('/veiculos');
+      router.refresh();
+    },
     onError: (err: Error) => toast.error(err.message),
   });
 
@@ -31,6 +67,14 @@ export default function NewVehiclePage() {
   const inputClass = "w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white";
   const labelClass = "mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300";
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
@@ -38,8 +82,8 @@ export default function NewVehiclePage() {
           <ArrowLeft className="h-5 w-5 text-slate-500" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Novo Veículo</h1>
-          <p className="text-sm text-slate-500">Cadastre um novo veículo na frota</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Editar Veículo</h1>
+          <p className="text-sm text-slate-500">Atualize as informações do veículo na frota</p>
         </div>
       </div>
 
@@ -80,16 +124,31 @@ export default function NewVehiclePage() {
           <div>
             <label className={labelClass}>Combustível *</label>
             <select className={inputClass} value={form.fuelType} onChange={(e) => setForm({ ...form, fuelType: e.target.value })}>
-              <option value="FLEX">Flex</option><option value="GASOLINA">Gasolina</option>
-              <option value="ETANOL">Etanol</option><option value="DIESEL">Diesel</option>
-              <option value="ELETRICO">Elétrico</option><option value="HIBRIDO">Híbrido</option>
+              <option value="FLEX">Flex</option>
+              <option value="GASOLINA">Gasolina</option>
+              <option value="ETANOL">Etanol</option>
+              <option value="DIESEL">Diesel</option>
+              <option value="ELETRICO">Elétrico</option>
+              <option value="HIBRIDO">Híbrido</option>
             </select>
           </div>
           <div>
             <label className={labelClass}>Câmbio *</label>
             <select className={inputClass} value={form.transmission} onChange={(e) => setForm({ ...form, transmission: e.target.value })}>
-              <option value="AUTOMATICO">Automático</option><option value="MANUAL">Manual</option>
-              <option value="CVT">CVT</option><option value="AUTOMATIZADO">Automatizado</option>
+              <option value="AUTOMATICO">Automático</option>
+              <option value="MANUAL">Manual</option>
+              <option value="CVT">CVT</option>
+              <option value="AUTOMATIZADO">Automatizado</option>
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Status *</label>
+            <select className={inputClass} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+              <option value="DISPONIVEL">Disponível</option>
+              <option value="ALUGADO">Alugado</option>
+              <option value="EM_MANUTENCAO">Em Manutenção</option>
+              <option value="INATIVO">Inativo</option>
+              <option value="VENDIDO">Vendido</option>
             </select>
           </div>
           <div>
@@ -116,7 +175,7 @@ export default function NewVehiclePage() {
           </Link>
           <button type="submit" disabled={mutation.isPending}
             className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50">
-            {mutation.isPending ? 'Salvando...' : 'Salvar Veículo'}
+            {mutation.isPending ? 'Salvando...' : 'Salvar Alterações'}
           </button>
         </div>
       </form>

@@ -99,7 +99,15 @@ export default function VehiclesPage() {
                   <Link href={`/veiculos/${vehicle._id}/editar`} className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800">
                     <Edit className="h-4 w-4" />
                   </Link>
-                  <button onClick={() => { if (confirm('Remover veículo?')) deleteMutation.mutate(vehicle._id); }}
+                  <button onClick={() => {
+                    toast(`Remover veículo ${vehicle.brand} ${vehicle.model}?`, {
+                      description: `Placa: ${vehicle.plate}`,
+                      action: {
+                        label: 'Remover',
+                        onClick: () => deleteMutation.mutate(vehicle._id),
+                      },
+                    });
+                  }}
                     className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950">
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -111,7 +119,7 @@ export default function VehiclesPage() {
               <p className="text-sm text-slate-500">{vehicle.plate} • {vehicle.year}</p>
               <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
                 <span>{vehicle.color}</span>
-                <span>{vehicle.currentMileage?.toLocaleString('pt-BR')} km</span>
+                <span>{(vehicle.mileage ?? vehicle.currentMileage ?? 0).toLocaleString('pt-BR')} km</span>
               </div>
             </div>
           ))}

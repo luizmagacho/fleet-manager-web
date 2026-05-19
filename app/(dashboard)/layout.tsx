@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import { useTheme } from 'next-themes';
 import {
   LayoutDashboard, Car, Users, FileText, Wrench, AlertTriangle,
   Receipt, Shield, Fuel, BarChart3, Bell, Settings, Menu, X,
-  LogOut, ChevronDown, Gauge, FileCheck, DollarSign,
+  LogOut, ChevronDown, Gauge, FileCheck, DollarSign, Sun, Moon,
 } from 'lucide-react';
 
 const navigation = [
@@ -31,11 +32,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex h-screen bg-white dark:bg-slate-950">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -46,16 +53,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-200 dark:border-slate-800 dark:bg-slate-900 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-slate-50/80 transition-transform duration-200 dark:border-slate-800 dark:bg-slate-900 lg:static lg:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Logo */}
         <div className="flex h-16 items-center justify-between border-b border-slate-200 px-6 dark:border-slate-800">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Car className="h-7 w-7 text-blue-600" />
+            <img src="/images/logo-icon.jpeg" alt="Roger Logo" className="h-8 w-8 rounded-lg object-cover" />
             <span className="text-lg font-bold text-slate-900 dark:text-white">
-              Fleet Manager
+              Roger Frota
             </span>
           </Link>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
@@ -123,10 +130,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Menu className="h-5 w-5" />
           </button>
 
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex items-center gap-2 ml-auto">
+            <button
+              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+              className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="Alternar Tema"
+            >
+              {mounted && resolvedTheme === 'dark' ? (
+                <Sun className="h-5 w-5 text-amber-500" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </button>
+
             <Link
               href="/notificacoes"
-              className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
               <Bell className="h-5 w-5" />
             </Link>

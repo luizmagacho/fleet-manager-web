@@ -1,3 +1,5 @@
+import { getSession } from 'next-auth/react';
+
 interface ApiClientOptions extends RequestInit {
   params?: Record<string, string | number | undefined>;
 }
@@ -26,6 +28,13 @@ class ApiClient {
     let token: string | undefined;
     if (typeof window !== 'undefined') {
       token = localStorage.getItem('accessToken') || undefined;
+      if (!token) {
+        const session = await getSession();
+        token = (session?.user as any)?.accessToken || undefined;
+        if (token) {
+          localStorage.setItem('accessToken', token);
+        }
+      }
     }
 
     const response = await fetch(url, {

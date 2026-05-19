@@ -74,7 +74,15 @@ export default function DriversPage() {
                     <div className="flex justify-end gap-1">
                       <Link href={`/motoristas/${driver._id}`} className="rounded p-1 text-slate-400 hover:text-slate-600"><Eye className="h-4 w-4" /></Link>
                       <Link href={`/motoristas/${driver._id}/editar`} className="rounded p-1 text-slate-400 hover:text-slate-600"><Edit className="h-4 w-4" /></Link>
-                      <button onClick={() => { if (confirm('Remover motorista?')) deleteMutation.mutate(driver._id); }}
+                      <button onClick={() => {
+                        toast(`Remover motorista ${driver.name}?`, {
+                          description: 'Esta ação não poderá ser desfeita.',
+                          action: {
+                            label: 'Remover',
+                            onClick: () => deleteMutation.mutate(driver._id),
+                          },
+                        });
+                      }}
                         className="rounded p-1 text-slate-400 hover:text-red-600"><Trash2 className="h-4 w-4" /></button>
                     </div>
                   </td>

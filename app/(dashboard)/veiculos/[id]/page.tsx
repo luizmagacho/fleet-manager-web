@@ -45,7 +45,7 @@ export default function VehicleDetailPage() {
             {[
               ['Placa', vehicle.plate], ['RENAVAM', vehicle.renavam], ['Chassi', vehicle.chassis],
               ['Cor', vehicle.color], ['Combustível', vehicle.fuelType], ['Câmbio', vehicle.transmission],
-              ['Lugares', vehicle.seats], ['Km Atual', `${vehicle.currentMileage?.toLocaleString('pt-BR')} km`],
+              ['Lugares', vehicle.seats], ['Km Atual', `${(vehicle.mileage ?? vehicle.currentMileage ?? 0).toLocaleString('pt-BR')} km`],
             ].map(([label, value]) => (
               <div key={label as string} className="flex justify-between">
                 <dt className="text-sm text-slate-500">{label}</dt>
