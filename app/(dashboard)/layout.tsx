@@ -130,7 +130,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <p className="truncate text-xs text-slate-500">{session?.user?.email}</p>
             </div>
             <button
-              onClick={() => signOut({ callbackUrl: '/login' })}
+              onClick={async () => {
+                if (typeof window !== 'undefined') {
+                  localStorage.removeItem('accessToken');
+                  localStorage.removeItem('refreshToken');
+                  try {
+                    await signOut({ redirect: false });
+                  } catch (e) {}
+                  window.location.href = '/login';
+                }
+              }}
               className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
               title="Sair"
             >
