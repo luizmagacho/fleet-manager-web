@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession, signOut, getSession } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import {
   LayoutDashboard, Car, Users, FileText, Wrench, AlertTriangle,
@@ -32,26 +32,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    const checkAuth = async () => {
+      setMounted(true);
+      if (typeof window !== 'undefined') {
+        let token = localStorage.getItem('accessToken');
+        if (!token) {
+          const sessionData = await getSession();
+          token = (sessionData?.user as any)?.accessToken || undefined;
+          if (token) {
+            localStorage.setItem('accessToken', token);
+            if ((sessionData?.user as any)?.refreshToken) {
+              localStorage.setItem('refreshToken', (sessionData?.user as any).refreshToken);
+            }
+          }
+        }
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('accessToken');
-      if (!token && status !== 'loading') {
-        router.push('/login');
+        if (!token) {
+          router.push('/login');
+        } else {
+          setLoading(false);
+        }
       }
-    }
-  }, [status, router]);
+    };
+    checkAuth();
+  }, [router]);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
-  if (!mounted || status === 'loading') {
+  if (!mounted || loading) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-white dark:bg-slate-950">
         <div className="flex flex-col items-center gap-4">
