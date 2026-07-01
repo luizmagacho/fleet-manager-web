@@ -65,7 +65,12 @@ class ApiClient {
       throw new Error(error.message || `Erro ${response.status}`);
     }
 
-    return response.json();
+    if (response.status === 204) {
+      return null as any;
+    }
+
+    const text = await response.text();
+    return text ? (JSON.parse(text) as T) : (null as any);
   }
 
   private async refreshToken(): Promise<boolean> {

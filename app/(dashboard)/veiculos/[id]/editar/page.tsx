@@ -17,8 +17,21 @@ export default function EditVehiclePage() {
     plate: '', renavam: '', chassis: '', brand: '', model: '',
     year: new Date().getFullYear(), modelYear: new Date().getFullYear(),
     color: '', fuelType: 'FLEX', transmission: 'AUTOMATICO', seats: 5,
-    purchasePrice: 0, notes: '', status: 'DISPONIVEL', mileage: 0,
+    purchasePrice: '', notes: '', status: 'DISPONIVEL', mileage: '',
   });
+
+  const formatInteger = (val: string) => {
+    const digits = String(val).replace(/\D/g, '');
+    if (!digits) return '';
+    return Number(digits).toLocaleString('pt-BR');
+  };
+
+  const formatCurrencyInput = (val: string) => {
+    const digits = String(val).replace(/\D/g, '');
+    if (!digits) return '';
+    const cents = Number(digits) / 100;
+    return cents.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ['vehicles', id],
@@ -41,16 +54,16 @@ export default function EditVehiclePage() {
         fuelType: vehicle.fuelType || 'FLEX',
         transmission: vehicle.transmission || 'AUTOMATICO',
         seats: vehicle.seats || 5,
-        purchasePrice: vehicle.purchasePrice || 0,
+        purchasePrice: formatCurrencyInput(String(Math.round((vehicle.purchasePrice || 0) * 100))),
         notes: vehicle.notes || '',
         status: vehicle.status || 'DISPONIVEL',
-        mileage: vehicle.mileage || vehicle.currentMileage || 0,
+        mileage: formatInteger(String(vehicle.mileage || vehicle.currentMileage || 0)),
       });
     }
   }, [vehicle]);
 
   const mutation = useMutation({
-    mutationFn: (updatedData: typeof form) => api.put(`/vehicles/${id}`, updatedData),
+    mutationFn: (updatedData: any) => api.put(`/vehicles/${id}`, updatedData),
     onSuccess: () => {
       toast.success('Veículo atualizado com sucesso!');
       router.push('/veiculos');
@@ -61,7 +74,12 @@ export default function EditVehiclePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate(form);
+    const payload = {
+      ...form,
+      mileage: +form.mileage.replace(/\D/g, '') || 0,
+      purchasePrice: (+form.purchasePrice.replace(/\D/g, '') || 0) / 100,
+    };
+    mutation.mutate(payload);
   };
 
   const inputClass = "w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white";
@@ -157,11 +175,11 @@ export default function EditVehiclePage() {
           </div>
           <div>
             <label className={labelClass}>Valor de Compra (R$)</label>
-            <input type="number" step="0.01" className={inputClass} value={form.purchasePrice} onChange={(e) => setForm({ ...form, purchasePrice: +e.target.value })} />
+            <input type="text" className={inputClass} value={form.purchasePrice} onChange={(e) => setForm({ ...form, purchasePrice: formatCurrencyInput(e.target.value) })} placeholder="0,00" />
           </div>
           <div>
             <label className={labelClass}>Quilometragem Atual (km) *</label>
-            <input type="number" className={inputClass} value={form.mileage} onChange={(e) => setForm({ ...form, mileage: +e.target.value })} placeholder="Ex: 15000" required />
+            <input type="text" className={inputClass} value={form.mileage} onChange={(e) => setForm({ ...form, mileage: formatInteger(e.target.value) })} placeholder="Ex: 120.000" required />
           </div>
           <div className="md:col-span-2">
             <label className={labelClass}>Observações</label>

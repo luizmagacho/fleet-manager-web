@@ -14,18 +14,36 @@ export default function NewVehiclePage() {
     plate: '', renavam: '', chassis: '', brand: '', model: '',
     year: new Date().getFullYear(), modelYear: new Date().getFullYear(),
     color: '', fuelType: 'FLEX', transmission: 'AUTOMATICO', seats: 5,
-    purchasePrice: 0, notes: '', mileage: 0,
+    purchasePrice: '', notes: '', mileage: '',
   });
 
+  const formatInteger = (val: string) => {
+    const digits = val.replace(/\D/g, '');
+    if (!digits) return '';
+    return Number(digits).toLocaleString('pt-BR');
+  };
+
+  const formatCurrencyInput = (val: string) => {
+    const digits = val.replace(/\D/g, '');
+    if (!digits) return '';
+    const cents = Number(digits) / 100;
+    return cents.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   const mutation = useMutation({
-    mutationFn: (data: typeof form) => api.post('/vehicles', data),
+    mutationFn: (data: any) => api.post('/vehicles', data),
     onSuccess: () => { toast.success('Veículo cadastrado!'); router.push('/veiculos'); },
     onError: (err: Error) => toast.error(err.message),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutation.mutate(form);
+    const payload = {
+      ...form,
+      mileage: +form.mileage.replace(/\D/g, '') || 0,
+      purchasePrice: (+form.purchasePrice.replace(/\D/g, '') || 0) / 100,
+    };
+    mutation.mutate(payload);
   };
 
   const inputClass = "w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white";
@@ -98,11 +116,11 @@ export default function NewVehiclePage() {
           </div>
           <div>
             <label className={labelClass}>Valor de Compra (R$)</label>
-            <input type="number" step="0.01" className={inputClass} value={form.purchasePrice} onChange={(e) => setForm({ ...form, purchasePrice: +e.target.value })} />
+            <input type="text" className={inputClass} value={form.purchasePrice} onChange={(e) => setForm({ ...form, purchasePrice: formatCurrencyInput(e.target.value) })} placeholder="0,00" />
           </div>
           <div>
             <label className={labelClass}>Quilometragem Atual (km) *</label>
-            <input type="number" className={inputClass} value={form.mileage} onChange={(e) => setForm({ ...form, mileage: +e.target.value })} placeholder="Ex: 15000" required />
+            <input type="text" className={inputClass} value={form.mileage} onChange={(e) => setForm({ ...form, mileage: formatInteger(e.target.value) })} placeholder="Ex: 120.000" required />
           </div>
           <div className="md:col-span-2">
             <label className={labelClass}>Observações</label>
