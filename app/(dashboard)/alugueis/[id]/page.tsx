@@ -5,10 +5,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Calendar, DollarSign, User, Car, FileText, CheckCircle2, Clock, Edit2, Trash2, RefreshCw, X } from 'lucide-react';
+import { ArrowLeft, Calendar, DollarSign, User, Car, FileText, CheckCircle2, Clock, Edit2, Trash2, RefreshCw, X, TrendingUp } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/shared-utils';
 import { toast } from 'sonner';
 import { DatePicker } from '@/app/components/date-picker';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function RentalDetailPage() {
   const params = useParams();
@@ -19,6 +20,9 @@ export default function RentalDetailPage() {
   const [renewOpen, setRenewOpen] = useState(false);
   const [renewDate, setRenewDate] = useState('');
   const [renewAmount, setRenewAmount] = useState(0);
+
+  const [mileageOpen, setMileageOpen] = useState(false);
+  const [newMileage, setNewMileage] = useState('');
 
   const { data, isLoading } = useQuery({
     queryKey: ['rentals', id],
@@ -62,6 +66,25 @@ export default function RentalDetailPage() {
     },
     onError: (err: Error) => toast.error(err.message),
   });
+
+  const mileageMutation = useMutation({
+    mutationFn: (payload: { newMileage: number }) =>
+      api.post(`/rentals/${id}/mileage`, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rentals', id] });
+      toast.success('Quilometragem atualizada com sucesso!');
+      setMileageOpen(false);
+      setNewMileage('');
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const handleMileageSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const mileageNum = +newMileage.replace(/\D/g, '');
+    if (!mileageNum) return toast.error('Digite uma quilometragem válida');
+    mileageMutation.mutate({ newMileage: mileageNum });
+  };
 
   const handleOpenRenew = () => {
     if (!rental) return;
@@ -137,6 +160,12 @@ export default function RentalDetailPage() {
   const paymentStatusLabels: Record<string, string> = {
     PAID: 'Pago', PENDING: 'Pendente', OVERDUE: 'Atrasado',
   };
+
+  const mileageLogs = rental.mileageLogs || [];
+  const chartData = mileageLogs.map((log: any) => ({
+    name: new Date(log.date).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }),
+    km: log.kmDriven
+  }));
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -354,6 +383,40 @@ export default function RentalDetailPage() {
         </div>
       </div>
 
+      {/* Mileage tracking section */}
+      <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 mt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-blue-600" /> Histórico de Quilometragem
+          </h3>
+          <button
+            onClick={() => setMileageOpen(true)}
+            className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+          >
+            Informar Quilometragem
+          </button>
+        </div>
+
+        {mileageLogs.length === 0 ? (
+          <div className="py-10 text-center text-slate-500">Nenhum registro de quilometragem informado neste contrato.</div>
+        ) : (
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                <Line type="monotone" dataKey="km" stroke="#2563eb" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                <CartesianGrid stroke="#ccc" strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}km`} />
+                <Tooltip 
+                  formatter={(value) => [`${value} km`, 'Rodados']} 
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </div>
+
       {/* Modal de Renovação */}
       {renewOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
@@ -403,6 +466,58 @@ export default function RentalDetailPage() {
                   className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
                 >
                   {renewMutation.isPending ? 'Salvando...' : 'Confirmar Renovação'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Quilometragem */}
+      {mileageOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-blue-600" /> Informar Quilometragem
+              </h3>
+              <button onClick={() => setMileageOpen(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleMileageSubmit} className="mt-4 space-y-4">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Quilometragem Atual do Veículo *
+                </label>
+                <input
+                  type="text"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                  value={newMileage}
+                  onChange={(e) => setNewMileage(e.target.value.replace(/\D/g, ''))}
+                  placeholder="Ex: 125000"
+                  required
+                />
+                <p className="mt-1 text-xs text-slate-500">
+                  O sistema calculará automaticamente o uso com base na última leitura. Limite: 7.000km/mês.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setMileageOpen(false)}
+                  className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={mileageMutation.isPending}
+                  className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {mileageMutation.isPending ? 'Salvando...' : 'Salvar'}
                 </button>
               </div>
             </form>

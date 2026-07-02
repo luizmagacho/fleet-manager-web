@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { api } from '@/lib/api-client';
@@ -12,9 +12,27 @@ import { DatePicker } from '@/app/components/date-picker';
 export default function NewRentalPage() {
   const router = useRouter();
   const [form, setForm] = useState({
-    vehicleId: '', driverId: '', startDate: '', expectedEndDate: '',
+    vehicleId: '', driverId: '', startDate: '', expectedEndDate: '', durationMonths: '',
     rentalAmount: 0, paymentFrequency: 'MONTHLY', securityDeposit: 0, notes: '',
   });
+
+  useEffect(() => {
+    if (form.startDate?.length === 10 && form.durationMonths) {
+      const months = Number(form.durationMonths);
+      if (!isNaN(months) && months > 0) {
+        const parts = form.startDate.split('/');
+        if (parts.length === 3) {
+          const date = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+          date.setMonth(date.getMonth() + months);
+          date.setDate(date.getDate() - 1);
+          setForm(prev => ({
+            ...prev,
+            expectedEndDate: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+          }));
+        }
+      }
+    }
+  }, [form.startDate, form.durationMonths]);
 
   const { data: vehiclesData, isLoading: vehiclesLoading } = useQuery({
     queryKey: ['vehicles', 'available'],
@@ -123,6 +141,20 @@ export default function NewRentalPage() {
             onChange={(val) => setForm({ ...form, startDate: val })}
             required
           />
+
+          {/* Duração (Meses) */}
+          <div>
+            <label className={labelClass}>Duração (Meses)</label>
+            <input
+              type="number"
+              className={inputClass}
+              value={form.durationMonths}
+              onChange={(e) => setForm({ ...form, durationMonths: e.target.value })}
+              placeholder="Ex: 3"
+              min="1"
+            />
+            <p className="mt-1 text-xs text-slate-500">Calcula o término exato (Ex: 01/07 a 30/09)</p>
+          </div>
 
           {/* Data Fim Prevista */}
           <DatePicker
