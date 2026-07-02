@@ -118,17 +118,24 @@ export default function RentalDetailPage() {
   const startDate = new Date(rental.startDate);
   const expectedEndDate = new Date(rental.expectedEndDate || rental.endDate || new Date());
   const currentDate = new Date();
-  
+  // Precise calendar month calculation
+  const calculateExactMonths = (start: Date, end: Date, minLimit = 1) => {
+    let months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+    if (end.getDate() < start.getDate()) {
+      const isLastDayOfEndMonth = new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate() === end.getDate();
+      if (!isLastDayOfEndMonth) {
+        months--;
+      }
+    }
+    return Math.max(minLimit, months);
+  };
+
   // Calculate total months
-  const diffTime = Math.abs(expectedEndDate.getTime() - startDate.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  const totalMonths = Math.max(1, Math.round(diffDays / 30));
+  const totalMonths = calculateExactMonths(startDate, expectedEndDate, 1);
 
   // Calculate elapsed months
   const elapsedEndDate = currentDate < expectedEndDate ? currentDate : expectedEndDate;
-  const elapsedDiffTime = Math.max(0, elapsedEndDate.getTime() - startDate.getTime());
-  const elapsedDiffDays = Math.ceil(elapsedDiffTime / (1000 * 60 * 60 * 24));
-  const elapsedMonths = Math.min(totalMonths, Math.round(elapsedDiffDays / 30) || 0);
+  const elapsedMonths = Math.min(totalMonths, calculateExactMonths(startDate, elapsedEndDate, 0));
 
   // Payments array calculations
   const payments = rental.payments || [];
