@@ -84,7 +84,7 @@ export default function RentalsPage() {
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{formatCurrency(rental.monthlyValue)}/mês</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{formatCurrency(rental.rentalAmount)}/mês</p>
                   <p className="text-xs text-slate-500">Início: {formatDate(rental.startDate)}</p>
                 </div>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[rental.status] || ''}`}>
