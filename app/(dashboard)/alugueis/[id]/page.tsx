@@ -122,13 +122,13 @@ export default function RentalDetailPage() {
   // Calculate total months
   const diffTime = Math.abs(expectedEndDate.getTime() - startDate.getTime());
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  const totalMonths = Math.ceil(diffDays / 30) || 1;
+  const totalMonths = Math.max(1, Math.round(diffDays / 30));
 
   // Calculate elapsed months
   const elapsedEndDate = currentDate < expectedEndDate ? currentDate : expectedEndDate;
   const elapsedDiffTime = Math.max(0, elapsedEndDate.getTime() - startDate.getTime());
   const elapsedDiffDays = Math.ceil(elapsedDiffTime / (1000 * 60 * 60 * 24));
-  const elapsedMonths = Math.min(totalMonths, Math.ceil(elapsedDiffDays / 30) || 0);
+  const elapsedMonths = Math.min(totalMonths, Math.round(elapsedDiffDays / 30) || 0);
 
   // Payments array calculations
   const payments = rental.payments || [];
