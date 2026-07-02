@@ -34,6 +34,27 @@ export default function NewDriverPage() {
   const inputClass = "w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white";
   const labelClass = "mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300";
 
+  const formatCpf = (value: string) => {
+    return value
+      .replace(/\D/g, '')
+      .slice(0, 11)
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  };
+
+  const formatPhone = (value: string) => {
+    return value
+      .replace(/\D/g, '')
+      .slice(0, 11)
+      .replace(/(\d{2})(\d)/, '($1) $2')
+      .replace(/(\d{4,5})(\d{4})$/, '$1-$2');
+  };
+
+  const formatCNH = (value: string) => {
+    return value.replace(/\D/g, '').slice(0, 11);
+  };
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center gap-4">
@@ -54,19 +75,19 @@ export default function NewDriverPage() {
           </div>
           <div>
             <label className={labelClass}>CPF *</label>
-            <input className={inputClass} value={form.cpf} onChange={(e) => setForm({ ...form, cpf: e.target.value.replace(/\D/g, '') })} placeholder="Apenas números" required />
+            <input className={inputClass} value={form.cpf} onChange={(e) => setForm({ ...form, cpf: formatCpf(e.target.value) })} placeholder="000.000.000-00" required />
           </div>
           <div>
             <label className={labelClass}>Telefone *</label>
-            <input className={inputClass} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="Ex: (41) 99999-9999" required />
+            <input className={inputClass} value={form.phone} onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} placeholder="(00) 00000-0000" required />
           </div>
           <div>
             <label className={labelClass}>E-mail *</label>
-            <input type="email" className={inputClass} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Ex: motorista@email.com" required />
+            <input type="email" className={inputClass} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value.toLowerCase() })} placeholder="Ex: motorista@email.com" required />
           </div>
           <div>
             <label className={labelClass}>Número da CNH *</label>
-            <input className={inputClass} value={form.licenseNumber} onChange={(e) => setForm({ ...form, licenseNumber: e.target.value })} placeholder="Número de registro da CNH" required />
+            <input className={inputClass} value={form.licenseNumber} onChange={(e) => setForm({ ...form, licenseNumber: formatCNH(e.target.value) })} placeholder="Apenas números" required />
           </div>
           <div>
             <label className={labelClass}>Categoria da CNH *</label>

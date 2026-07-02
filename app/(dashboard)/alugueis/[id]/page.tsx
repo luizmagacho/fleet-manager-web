@@ -23,6 +23,7 @@ export default function RentalDetailPage() {
 
   const [mileageOpen, setMileageOpen] = useState(false);
   const [newMileage, setNewMileage] = useState('');
+  const [newMileageDate, setNewMileageDate] = useState('');
 
   const { data, isLoading } = useQuery({
     queryKey: ['rentals', id],
@@ -68,7 +69,7 @@ export default function RentalDetailPage() {
   });
 
   const mileageMutation = useMutation({
-    mutationFn: (payload: { newMileage: number }) =>
+    mutationFn: (payload: { newMileage: number, date?: string }) =>
       api.post(`/rentals/${id}/mileage`, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rentals', id] });
@@ -83,7 +84,7 @@ export default function RentalDetailPage() {
     e.preventDefault();
     const mileageNum = +newMileage.replace(/\D/g, '');
     if (!mileageNum) return toast.error('Digite uma quilometragem válida');
-    mileageMutation.mutate({ newMileage: mileageNum });
+    mileageMutation.mutate({ newMileage: mileageNum, date: newMileageDate || undefined });
   };
 
   const handleOpenRenew = () => {
@@ -495,7 +496,17 @@ export default function RentalDetailPage() {
             <form onSubmit={handleMileageSubmit} className="mt-4 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Quilometragem Atual do Veículo *
+                  Data da Leitura (Opcional)
+                </label>
+                <input
+                  type="date"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white mb-3"
+                  value={newMileageDate}
+                  onChange={(e) => setNewMileageDate(e.target.value)}
+                />
+                
+                <label className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Quilometragem do Veículo *
                 </label>
                 <input
                   type="text"
