@@ -320,6 +320,40 @@ export default function RentalDetailPage() {
               </div>
             </dl>
           </div>
+
+          {/* Mileage tracking section */}
+          <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-blue-600" /> Histórico de Quilometragem
+              </h3>
+              <button
+                onClick={() => setMileageOpen(true)}
+                className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+              >
+                Informar
+              </button>
+            </div>
+
+            {mileageLogs.length === 0 ? (
+              <div className="py-10 text-center text-slate-500">Nenhum registro de quilometragem.</div>
+            ) : (
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                    <Line type="monotone" dataKey="km" stroke="#2563eb" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <CartesianGrid stroke="#ccc" strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                    <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}km`} />
+                    <Tooltip 
+                      formatter={(value) => [`${value} km`, 'Rodados']} 
+                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Side: Payments table list */}
@@ -387,40 +421,6 @@ export default function RentalDetailPage() {
             )}
           </div>
         </div>
-      </div>
-
-      {/* Mileage tracking section */}
-      <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900 mt-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-blue-600" /> Histórico de Quilometragem
-          </h3>
-          <button
-            onClick={() => setMileageOpen(true)}
-            className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
-          >
-            Informar Quilometragem
-          </button>
-        </div>
-
-        {mileageLogs.length === 0 ? (
-          <div className="py-10 text-center text-slate-500">Nenhum registro de quilometragem informado neste contrato.</div>
-        ) : (
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                <Line type="monotone" dataKey="km" stroke="#2563eb" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                <CartesianGrid stroke="#ccc" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false} />
-                <YAxis tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false} tickFormatter={(val) => `${val}km`} />
-                <Tooltip 
-                  formatter={(value) => [`${value} km`, 'Rodados']} 
-                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
       </div>
 
       {/* Modal de Renovação */}
