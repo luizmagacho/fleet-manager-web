@@ -161,6 +161,12 @@ export default function RentalDetailPage() {
     PAID: 'Pago', PENDING: 'Pendente', OVERDUE: 'Atrasado',
   };
 
+  const frequencyLabels: Record<string, string> = {
+    WEEKLY: 'semanal',
+    BIWEEKLY: 'quinzenal',
+    MONTHLY: 'mensal',
+  };
+
   const mileageLogs = rental.mileageLogs || [];
   const chartData = mileageLogs.map((log: any) => ({
     name: new Date(log.date).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }),
@@ -250,7 +256,7 @@ export default function RentalDetailPage() {
           </p>
           <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
             <DollarSign className="h-4 w-4 text-green-500" />
-            <span>Valor mensal: {formatCurrency(rental.rentalAmount)}</span>
+            <span>Valor {frequencyLabels[rental.paymentFrequency] || 'mensal'}: {formatCurrency(rental.rentalAmount)}</span>
           </div>
         </div>
 

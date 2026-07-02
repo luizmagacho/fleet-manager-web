@@ -29,6 +29,12 @@ const statusLabels: Record<string, string> = {
   CANCELADO: 'Cancelado',
 };
 
+const frequencyLabels: Record<string, string> = {
+  WEEKLY: '/semana',
+  BIWEEKLY: '/quinzena',
+  MONTHLY: '/mês',
+};
+
 export default function RentalsPage() {
   const [statusFilter, setStatusFilter] = useState('');
 
@@ -84,7 +90,7 @@ export default function RentalsPage() {
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-right">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{formatCurrency(rental.rentalAmount)}/mês</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">{formatCurrency(rental.rentalAmount)}{frequencyLabels[rental.paymentFrequency] || '/mês'}</p>
                   <p className="text-xs text-slate-500">Início: {formatDate(rental.startDate)}</p>
                 </div>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[rental.status] || ''}`}>
