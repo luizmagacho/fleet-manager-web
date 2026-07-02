@@ -8,8 +8,25 @@ import { Plus, Search, FileText, Eye } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/shared-utils';
 
 const statusColors: Record<string, string> = {
-  ATIVO: 'bg-green-100 text-green-700', ENCERRADO: 'bg-slate-100 text-slate-700',
-  PENDENTE: 'bg-yellow-100 text-yellow-700', CANCELADO: 'bg-red-100 text-red-700',
+  ACTIVE: 'bg-green-100 text-green-700',
+  ATIVO: 'bg-green-100 text-green-700',
+  COMPLETED: 'bg-slate-100 text-slate-700',
+  ENCERRADO: 'bg-slate-100 text-slate-700',
+  PENDING: 'bg-yellow-100 text-yellow-700',
+  PENDENTE: 'bg-yellow-100 text-yellow-700',
+  CANCELLED: 'bg-red-100 text-red-700',
+  CANCELADO: 'bg-red-100 text-red-700',
+};
+
+const statusLabels: Record<string, string> = {
+  ACTIVE: 'Ativo',
+  ATIVO: 'Ativo',
+  COMPLETED: 'Encerrado',
+  ENCERRADO: 'Encerrado',
+  PENDING: 'Pendente',
+  PENDENTE: 'Pendente',
+  CANCELLED: 'Cancelado',
+  CANCELADO: 'Cancelado',
 };
 
 export default function RentalsPage() {
@@ -71,7 +88,7 @@ export default function RentalsPage() {
                   <p className="text-xs text-slate-500">Início: {formatDate(rental.startDate)}</p>
                 </div>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[rental.status] || ''}`}>
-                  {rental.status}
+                  {statusLabels[rental.status] || rental.status}
                 </span>
                 <Eye className="h-5 w-5 text-slate-400" />
               </div>
