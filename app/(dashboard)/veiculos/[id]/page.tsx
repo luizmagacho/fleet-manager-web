@@ -58,7 +58,7 @@ export default function VehicleDetailPage() {
               ['Lugares', vehicle.seats], ['Km Atual', `${(vehicle.mileage ?? vehicle.currentMileage ?? 0).toLocaleString('pt-BR')} km`],
             ].map(([label, value]) => (
               <div key={label as string} className="flex justify-between">
-                <dt className="text-sm text-slate-500">{label}</dt>
+                <dt className="text-sm text-slate-500 dark:text-slate-400">{label}</dt>
                 <dd className="text-sm font-medium text-slate-900 dark:text-white">{value}</dd>
               </div>
             ))}
@@ -73,7 +73,7 @@ export default function VehicleDetailPage() {
               ['Status', getStatusBadge(vehicle.status)],
             ].map(([label, value]) => (
               <div key={label as string} className="flex justify-between">
-                <dt className="text-sm text-slate-500">{label}</dt>
+                <dt className="text-sm text-slate-500 dark:text-slate-400">{label}</dt>
                 <dd className="text-sm font-medium text-slate-900 dark:text-white">{value}</dd>
               </div>
             ))}
