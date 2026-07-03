@@ -72,8 +72,10 @@ export default function NewRentalPage() {
       return `${year}-${month}-${day}`;
     };
 
+    const { durationMonths, ...restForm } = form;
+
     const payload = {
-      ...form,
+      ...restForm,
       startDate: convertToISO(form.startDate),
       expectedEndDate: convertToISO(form.expectedEndDate),
     };
