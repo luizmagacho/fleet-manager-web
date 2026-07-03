@@ -21,6 +21,16 @@ export default function VehicleDetailPage() {
   if (isLoading) return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" /></div>;
   if (!vehicle) return <div className="py-20 text-center text-slate-500">Veículo não encontrado</div>;
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'AVAILABLE': return <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">Disponível</span>;
+      case 'RENTED': return <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-400">Alugado</span>;
+      case 'MAINTENANCE': return <span className="rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-semibold text-orange-700 dark:bg-orange-900/40 dark:text-orange-400">Em Manutenção</span>;
+      case 'INACTIVE': return <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-400">Inativo</span>;
+      default: return <span className="text-slate-500">{status}</span>;
+    }
+  };
+
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
@@ -39,7 +49,7 @@ export default function VehicleDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
           <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">Informações Gerais</h3>
           <dl className="space-y-3">
             {[
@@ -54,13 +64,13 @@ export default function VehicleDetailPage() {
             ))}
           </dl>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
           <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">Financeiro</h3>
           <dl className="space-y-3">
             {[
               ['Valor de Compra', vehicle.purchasePrice ? formatCurrency(vehicle.purchasePrice) : '-'],
               ['Valor FIPE', vehicle.fipeValue ? formatCurrency(vehicle.fipeValue) : '-'],
-              ['Status', vehicle.status],
+              ['Status', getStatusBadge(vehicle.status)],
             ].map(([label, value]) => (
               <div key={label as string} className="flex justify-between">
                 <dt className="text-sm text-slate-500">{label}</dt>
