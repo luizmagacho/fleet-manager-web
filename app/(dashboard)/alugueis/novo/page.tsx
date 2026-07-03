@@ -13,7 +13,7 @@ export default function NewRentalPage() {
   const router = useRouter();
   const [form, setForm] = useState({
     vehicleId: '', driverId: '', startDate: '', expectedEndDate: '', durationMonths: '',
-    rentalAmount: 0, paymentFrequency: 'MONTHLY', securityDeposit: 0, notes: '',
+    rentalAmount: '', paymentFrequency: 'MONTHLY', securityDeposit: '', notes: '',
   });
 
   useEffect(() => {
@@ -57,6 +57,30 @@ export default function NewRentalPage() {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  const handleCurrencyChange = (value: string, field: 'rentalAmount' | 'securityDeposit') => {
+    // Remove tudo que não é número
+    const numericValue = value.replace(/\D/g, '');
+    
+    // Converte para decimal (ex: 15000 -> 150.00)
+    const decimalValue = (Number(numericValue) / 100).toFixed(2);
+    
+    // Formata para moeda (pt-BR)
+    const formattedValue = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(Number(decimalValue));
+    
+    // Se estiver zerado, permite apagar tudo
+    setForm({ ...form, [field]: numericValue === '' ? '' : formattedValue });
+  };
+
+  const parseCurrencyToNumber = (value: string | number) => {
+    if (typeof value === 'number') return value;
+    if (!value) return 0;
+    // Pega apenas números do R$ 1.500,00 e converte para float 1500.00
+    return Number(value.replace(/\D/g, '')) / 100;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.vehicleId) return toast.error('Selecione um veículo');
@@ -76,6 +100,8 @@ export default function NewRentalPage() {
 
     const payload = {
       ...restForm,
+      rentalAmount: parseCurrencyToNumber(form.rentalAmount),
+      securityDeposit: parseCurrencyToNumber(form.securityDeposit),
       startDate: convertToISO(form.startDate),
       expectedEndDate: convertToISO(form.expectedEndDate),
     };
@@ -170,11 +196,11 @@ export default function NewRentalPage() {
           <div>
             <label className={labelClass}>Valor de Locação (R$ por ciclo) *</label>
             <input
-              type="number"
-              step="0.01"
+              type="text"
               className={inputClass}
               value={form.rentalAmount}
-              onChange={(e) => setForm({ ...form, rentalAmount: +e.target.value })}
+              onChange={(e) => handleCurrencyChange(e.target.value, 'rentalAmount')}
+              placeholder="R$ 0,00"
               required
             >
             </input>
@@ -198,11 +224,11 @@ export default function NewRentalPage() {
           <div>
             <label className={labelClass}>Depósito Caução (R$)</label>
             <input
-              type="number"
-              step="0.01"
+              type="text"
               className={inputClass}
               value={form.securityDeposit}
-              onChange={(e) => setForm({ ...form, securityDeposit: +e.target.value })}
+              onChange={(e) => handleCurrencyChange(e.target.value, 'securityDeposit')}
+              placeholder="R$ 0,00"
             >
             </input>
           </div>
