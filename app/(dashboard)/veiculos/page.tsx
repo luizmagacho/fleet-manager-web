@@ -124,8 +124,8 @@ export default function VehiclesPage() {
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                 {vehicle.brand} {vehicle.model}
               </h3>
-              <p className="text-sm text-slate-500">{vehicle.plate} • {vehicle.year}</p>
-              <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
+              <p className="text-sm text-slate-500 dark:text-slate-400">{vehicle.plate} • {vehicle.year}</p>
+              <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>{vehicle.color}</span>
                 <span>{(vehicle.mileage ?? vehicle.currentMileage ?? 0).toLocaleString('pt-BR')} km</span>
               </div>

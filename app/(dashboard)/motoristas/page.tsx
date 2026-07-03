@@ -55,19 +55,19 @@ export default function DriversPage() {
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
           <table className="w-full">
             <thead><tr className="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50">
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Nome</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">CPF</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Telefone</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Score</th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Status</th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase text-slate-500">Ações</th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Nome</th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">CPF</th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Telefone</th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Score</th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Status</th>
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase text-slate-500 dark:text-slate-400">Ações</th>
             </tr></thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
               {drivers.map((driver: any) => (
                 <tr key={driver._id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                   <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white">{driver.name}</td>
-                  <td className="px-4 py-3 text-sm text-slate-500">{formatCPF(driver.cpf)}</td>
-                  <td className="px-4 py-3 text-sm text-slate-500">{driver.phone}</td>
+                  <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">{formatCPF(driver.cpf)}</td>
+                  <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400">{driver.phone}</td>
                   <td className="px-4 py-3 text-sm"><span className={`font-medium ${driver.score >= 80 ? 'text-green-600' : driver.score >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>{driver.score}</span></td>
                   <td className="px-4 py-3 text-sm"><span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900 dark:text-green-300">{driver.status}</span></td>
                   <td className="px-4 py-3 text-right">
