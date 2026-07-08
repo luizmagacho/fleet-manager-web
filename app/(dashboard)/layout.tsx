@@ -65,7 +65,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       }
     };
     checkAuth();
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
