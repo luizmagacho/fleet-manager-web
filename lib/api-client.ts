@@ -55,7 +55,10 @@ class ApiClient {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
+        // Importante: Limpar a sessão do NextAuth (cookie) antes de ir para o login
+        const { signOut } = await import('next-auth/react');
+        await signOut({ redirect: true, callbackUrl: '/login' });
+        return null as any;
       }
       throw new Error('Sessão expirada');
     }
